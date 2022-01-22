@@ -6,20 +6,30 @@ import config
 IBMQ.enable_account(config.api_key)
 provider = IBMQ.get_provider(hub='ibm-q')
 
+#50090
+#49910
 
-def getBits(n=4, monitor=False, backend='ibmq_belem'):
+#0.5009
+
+#200948
+#199052
+
+#0.50237
+
+def getBits(n=5, monitor=False, backend='ibmq_belem'):
     #Init n qbits
     q = QuantumRegister(n,'q')
     c = ClassicalRegister(n,'c')
     circuit = QuantumCircuit(q,c)
 
     #Put qbits into superposition of 1 and 0
-    circuit.h(q) 
+    circuit.x(q)
+    circuit.ry(1.53999639882, q)
 
     circuit.measure(q,c) # Collapse wave function
 
     backend = provider.get_backend(backend)
-    job = execute(circuit, backend, shots=64, memory=True) #64 * 4 = 256
+    job = execute(circuit, backend, shots=20000, memory=True)
 
     if monitor:
         job_monitor(job)
@@ -38,4 +48,21 @@ def getBits(n=4, monitor=False, backend='ibmq_belem'):
     return bitString
     
 bitString = getBits(monitor=True)
-print('Private Key: ' + str(int(bitString, 2)))
+
+b0 = 0
+b1 = 0
+for bit in bitString:
+    if bit == '0':
+        b0 += 1
+    elif bit == '1':
+        b1 += 1
+    else:
+        print('HOW:? ', end='')
+        print(bit)
+
+print()
+print(b0)
+print(b1)
+
+print()
+print(b0 / (b0 + b1))
